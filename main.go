@@ -1,15 +1,12 @@
 package main
 
-import (
-	"fmt"
-	"net/http"
-	"greyhound"
-)
+import "net/http"
+import "greyhound"
 
 var gs = greyhound.NewGreyhoundSearch()
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, gs.Search("/tmp", "test"))
+	greyhound.HandleGreyhoundSearch(w, r, gs)
 }
 
 func main() {

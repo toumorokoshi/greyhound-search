@@ -1,7 +1,6 @@
 package greyhound
 
 import "io/ioutil"
-import "encoding/json"
 
 type SearchIndex struct {
 	Files []string
@@ -17,8 +16,7 @@ func NewSearchIndex (rootDir string) *SearchIndex {
 	return &SearchIndex{files}
 }
 
-// return the results for a search string m with a json result string
-func (si *SearchIndex) ResultsJson(query string) string {
-	result, _ := json.Marshal(si.Files)
-	return string(result)
+// return a string slice for the results for a search string m with a json result string
+func (si *SearchIndex) Results(query string) []string {
+	return si.Files
 }
