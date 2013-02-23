@@ -2,20 +2,31 @@ package greyhound
 
 import "fmt"
 
+func NewGreyhoundSearch() *GreyhoundSearch {
+	return &GreyhoundSearch{make(map[string]*SearchIndex)}
+}
 
 type GreyhoundSearch struct {
-	Projects []string
+	Projects map[string]*SearchIndex
 }
 
 func (gs *GreyhoundSearch) AddProject(path string) {
-	gs.Projects = append(gs.Projects, path)
+	gs.Projects[path] = NewSearchIndex(path)
 }
 
 func (gs *GreyhoundSearch) PrintProjects() {
-	l := len(gs.Projects)
-	for i := 0; i < l; i++ {
-		fmt.Println(gs.Projects[i])
+	for k, v := range gs.Projects {
+		fmt.Println(k)
+		fmt.Println(v)
 	}
 }
 
 
+// return a search result for a projectName query
+func (gs *GreyhoundSearch) Search(projectName, query string) string {
+	_, hasKey := gs.Projects[projectName]
+	if hasKey {
+		return gs.Projects[projectName].ResultsJson(query)
+	}
+	return "nothing found!"
+}
