@@ -26,9 +26,11 @@ func (gs *GreyhoundSearch) PrintProjects() {
 // return a search result for a projectName query
 func (gs *GreyhoundSearch) Search(projectName, query string) string {
 	_, hasKey := gs.Projects[projectName]
+	var out_json []byte
 	if hasKey {
-		result, _ := json.Marshal(gs.Projects[projectName].Results(query))
-		return string(result)
+		out_json, _ = json.Marshal(gs.Projects[projectName].Results(query))
+	} else {
+		out_json, _ = json.Marshal([]string{"no results found"})
 	}
-	return "nothing found!"
+	return string(out_json)
 }

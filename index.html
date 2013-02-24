@@ -1,0 +1,72 @@
+<html>
+<head>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
+<script type="text/javascript">
+var path;
+var ws;
+function init() {
+   console.log("init");
+   if (ws != null) {
+     ws.close();
+     ws = null;
+   }
+   path = document.msgform.path.value;
+   console.log("path:" + path);
+   var div = document.getElementById("msg");
+   div.innerText = "path:" + path + "\n" + div.innerText;
+   ws = new WebSocket("ws://localhost:8081/socket");
+   ws.onopen = function () {
+      div.innerText = "opened\n" + div.innerText;
+   };
+   ws.onmessage = function (e) {
+      div.innerText = "msg:" + e.data + "\n" + div.innerText;
+      if (e.data instanceof ArrayBuffer) {
+        s = "ArrayBuffer: " + e.data.byteLength + "[";
+        var view = new Uint8Array(e.data);
+        for (var i = 0; i < view.length; ++i) {
+          s += " " + view[i];
+        }
+        s += "]";
+        div.innerText = s + "\n" + div.innerText;
+      }
+   };
+   ws.onclose = function (e) {
+      div.innerText = "closed\n" + div.innerText;
+   };
+   console.log("init");
+   div.innerText = "init\n" + div.innerText;
+};
+
+function send() {
+   console.log("send");
+   var m = document.msgform.message.value;
+   m = JSON.stringify({action: "query", data: { project : "/tmp/", query: "test"}})
+   console.log("send:" + m);
+   ws.send(m);
+   return false;
+};
+
+$(function () {
+    $('#file').on('keypress', function () {
+        setTimeout(function() { $('#completion').text($('#file').val()) });
+    });
+});
+</script>
+<body onLoad="init();">
+<form name="msgform" action="#" onsubmit="return send();">
+<select onchange="init()" name="path">
+<option value="/socket" selected="selected">/socket</option>
+</select>
+<input type="text" name="message" size="80" value="">
+<input type="file" name="file" >
+<input type="submit" value="send">
+</form>
+<div id="msg"></div>
+<div class="search-test">
+  <label for="file">File: </label>
+  <input id="file" />
+</div>
+<p id="completion">
+</p>
+</html>
