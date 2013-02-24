@@ -6,9 +6,9 @@ TBD
 package greyhound
 
 import "fmt"
+import "log"
 import "strings"
 import "net/http"
-import "encoding/json"
 import "code.google.com/p/go.net/websocket"
 
 func HandleGreyhoundSearch(w http.ResponseWriter, r *http.Request, gs *GreyhoundSearch) {
@@ -36,25 +36,25 @@ func HandleGreyhoundSearchSocket(ws *websocket.Conn, gs *GreyhoundSearch) {
 	for {
 		var msg socketMessage
 		err := websocket.JSON.Receive(ws, &msg)
+		log.Println("raw message: ",  msg)
 		if err != nil { 
 			fmt.Println(err)
 			break
 		}
 		if strings.EqualFold(msg.Action, "query") {
-			socketQuery(ws, msg.Data, gs)
+			socketQuery(ws, msg.QueryData, gs)
 		}
 	}
 }
 
-func socketQuery(ws *websocket.Conn, raw_json []byte, gs *GreyhoundSearch) {
-	var qd queryData
-	_ = json.Unmarshal(raw_json, qd)
+func socketQuery(ws *websocket.Conn, qd queryData, gs *GreyhoundSearch) {
+	log.Println(qd)
 	_ = websocket.Message.Send(ws, gs.Search(qd.Project, qd.Query))
 }
 
 type socketMessage struct {
 	Action string
-	Data []byte
+	QueryData queryData
 }
 
 type queryData struct {

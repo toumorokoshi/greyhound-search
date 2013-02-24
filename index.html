@@ -16,6 +16,7 @@ function init() {
    var div = document.getElementById("msg");
    div.innerText = "path:" + path + "\n" + div.innerText;
    ws = new WebSocket("ws://localhost:8081/socket");
+   ws.binaryType = "blob"
    ws.onopen = function () {
       div.innerText = "opened\n" + div.innerText;
    };
@@ -41,7 +42,7 @@ function init() {
 function send() {
    console.log("send");
    var m = document.msgform.message.value;
-   m = JSON.stringify({action: "query", data: { project : "/tmp/", query: "test"}})
+   m = JSON.stringify({action: "query", queryData: { project : "/tmp/", query: "test"}})
    console.log("send:" + m);
    ws.send(m);
    return false;
