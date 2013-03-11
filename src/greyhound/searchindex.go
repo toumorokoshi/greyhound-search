@@ -1,6 +1,7 @@
 package greyhound
 
 import "io/ioutil"
+import "strings"
 
 type SearchIndex struct {
 	Files []string
@@ -18,5 +19,11 @@ func NewSearchIndex (rootDir string) *SearchIndex {
 
 // return a string slice for the results for a search string m with a json result string
 func (si *SearchIndex) Results(query string) []string {
-	return si.Files
+  returnFiles := make([]string, 0, len(si.Files))
+  for _, f := range si.Files {
+      if(strings.Contains(f, query)) {
+          returnFiles = append(returnFiles, f)
+      }
+  }
+  return returnFiles
 }
