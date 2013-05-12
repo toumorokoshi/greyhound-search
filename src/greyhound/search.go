@@ -1,6 +1,7 @@
 package greyhound
 
 import "fmt"
+import "log"
 import "encoding/json"
 
 func NewGreyhoundSearch() *GreyhoundSearch {
@@ -25,6 +26,7 @@ func (gs *GreyhoundSearch) PrintProjects() {
 
 // return a search result for a projectName query
 func (gs *GreyhoundSearch) Search(projectName, query string) string {
+	log.Print(projectName)
 	_, hasKey := gs.Projects[projectName]
 	var out_json []byte
 	if hasKey {

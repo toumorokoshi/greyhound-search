@@ -1,6 +1,7 @@
 package main
 
 import "io"
+import "log"
 import "os"
 import "net/http"
 
@@ -38,10 +39,11 @@ func handleIndexPage(w http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	gs.AddProject("/tmp/");
+	gs.AddProject("/Users/tsutsumi/workspace/");
 	gs.PrintProjects()
 	http.Handle("/socket", websocket.Handler(handlerSocket))
 	http.HandleFunc("/query", handler)
 	http.HandleFunc("/", handleIndexPage)
+	log.Print("Listening on port 8081...")
 	http.ListenAndServe(":8081", nil)
 }

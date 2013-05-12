@@ -14,14 +14,15 @@ function init() {
    path = document.msgform.path.value;
    console.log("path:" + path);
    var div = document.getElementById("msg");
-   div.innerText = "path:" + path + "\n" + div.innerText;
+   var log = document.getElementById("log");
+   log.innerText = "path:" + path + "\n" + div.innerText;
    ws = new WebSocket("ws://localhost:8081/socket");
    ws.binaryType = "blob"
    ws.onopen = function () {
-      div.innerText = "opened\n" + div.innerText;
+      log.innerText = "opened\n" + log.innerText;
    };
    ws.onmessage = function (e) {
-      div.innerText = "msg:" + e.data + "\n" + div.innerText;
+      div.innerText = "msg:" + e.data + "\n"
       if (e.data instanceof ArrayBuffer) {
         s = "ArrayBuffer: " + e.data.byteLength + "[";
         var view = new Uint8Array(e.data);
@@ -29,33 +30,41 @@ function init() {
           s += " " + view[i];
         }
         s += "]";
-        div.innerText = s + "\n" + div.innerText;
+        div.innerText = s + "\n"
       }
    };
    ws.onclose = function (e) {
-      div.innerText = "closed\n" + div.innerText;
+      log.innerText = "closed\n" + log.innerText;
    };
    console.log("init");
-   div.innerText = "init\n" + div.innerText;
+   log.innerText = "init\n" + log.innerText;
 };
 
-function send() {
-   console.log("send");
+function sendForm() {
    var m = document.msgform.message.value;
-   m = JSON.stringify({action: "query", queryData: { project : "/tmp/", query: "test"}})
+   send(m);
+};
+
+function send(message) {
+   console.log("send");
+   m = JSON.stringify({action: "query", 
+       queryData: { project : "/Users/tsutsumi/workspace/", query: message}})
    console.log("send:" + m);
    ws.send(m);
    return false;
-};
+}
 
 $(function () {
     $('#file').on('keypress', function () {
-        setTimeout(function() { $('#completion').text($('#file').val()) });
+        setTimeout(function() { 
+                            send($('#file').val());
+                            //$('#completion').text($('#file').val()) 
+                    });
     });
 });
 </script>
 <body onLoad="init();">
-<form name="msgform" action="#" onsubmit="return send();">
+<form name="msgform" action="#" onsubmit="return sendForm();">
 <select onchange="init()" name="path">
 <option value="/socket" selected="selected">/socket</option>
 </select>
@@ -63,11 +72,13 @@ $(function () {
 <input type="file" name="file" >
 <input type="submit" value="send">
 </form>
-<div id="msg"></div>
 <div class="search-test">
   <label for="file">File: </label>
   <input id="file" />
 </div>
+<div id="msg"></div>
+<h2>Log</h2>
+<div id="log"></div>
 <p id="completion">
 </p>
 </html>
