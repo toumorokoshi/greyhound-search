@@ -24,13 +24,14 @@ function init() {
    ws.onmessage = function (e) {
       div.innerText = "msg:" + e.data + "\n"
       if (e.data instanceof ArrayBuffer) {
-        s = "ArrayBuffer: " + e.data.byteLength + "[";
+        completion(e.data)
+        /*s = "ArrayBuffer: " + e.data.byteLength + "[";
         var view = new Uint8Array(e.data);
         for (var i = 0; i < view.length; ++i) {
           s += " " + view[i];
         }
         s += "]";
-        div.innerText = s + "\n"
+        div.innerText = s + "\n" */
       }
    };
    ws.onclose = function (e) {
@@ -41,9 +42,16 @@ function init() {
 };
 
 function sendForm() {
-   var m = document.msgform.message.value;
-   send(m);
-};
+// receive an array and create a list
+function completion(list) {
+  var completion_block = $('#completion');
+  completion_block.html("<ul></ul>");
+  $.each(list, function (index, value) {
+    var element = $("<li></li>");
+    element.html(value);
+    completion_block.append(element);
+  });
+}
 
 function send(message) {
    console.log("send");
@@ -69,7 +77,6 @@ $(function () {
 <option value="/socket" selected="selected">/socket</option>
 </select>
 <input type="text" name="message" size="80" value="">
-<input type="file" name="file" >
 <input type="submit" value="send">
 </form>
 <div class="search-test">
