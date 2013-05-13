@@ -22,17 +22,18 @@ function init() {
       log.innerText = "opened\n" + log.innerText;
    };
    ws.onmessage = function (e) {
-      div.innerText = "msg:" + e.data + "\n"
-      if (e.data instanceof ArrayBuffer) {
-        completion(e.data)
-        /*s = "ArrayBuffer: " + e.data.byteLength + "[";
+      //div.innerText = "msg:" + e.data + "\n"
+      completion($.parseJSON(e.data));
+      /*if (e.data instanceof ArrayBuffer) {
+        s = "ArrayBuffer: " + e.data.byteLength + "[";
         var view = new Uint8Array(e.data);
         for (var i = 0; i < view.length; ++i) {
           s += " " + view[i];
         }
         s += "]";
-        div.innerText = s + "\n" */
-      }
+        div.innerText = s + "\n";
+        completion(e.data);
+      } */
    };
    ws.onclose = function (e) {
       log.innerText = "closed\n" + log.innerText;
@@ -42,6 +43,19 @@ function init() {
 };
 
 function sendForm() {
+   var m = document.msgform.message.value;
+   send(m);
+};
+
+function send(message) {
+   console.log("send");
+   m = JSON.stringify({action: "query", 
+       queryData: { project : "/Users/tsutsumi/workspace/", query: message}})
+   console.log("send:" + m);
+   ws.send(m);
+   return false;
+}
+
 // receive an array and create a list
 function completion(list) {
   var completion_block = $('#completion');
@@ -51,15 +65,6 @@ function completion(list) {
     element.html(value);
     completion_block.append(element);
   });
-}
-
-function send(message) {
-   console.log("send");
-   m = JSON.stringify({action: "query", 
-       queryData: { project : "/Users/tsutsumi/workspace/", query: message}})
-   console.log("send:" + m);
-   ws.send(m);
-   return false;
 }
 
 $(function () {
@@ -77,15 +82,16 @@ $(function () {
 <option value="/socket" selected="selected">/socket</option>
 </select>
 <input type="text" name="message" size="80" value="">
+<input type="file" name="file" >
 <input type="submit" value="send">
 </form>
 <div class="search-test">
   <label for="file">File: </label>
   <input id="file" />
 </div>
+<p id="completion">
+</p>
 <div id="msg"></div>
 <h2>Log</h2>
 <div id="log"></div>
-<p id="completion">
-</p>
 </html>
