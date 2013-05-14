@@ -16,9 +16,8 @@ func (gs *GreyhoundSearch) AddProject(path string) {
 }
 
 func (gs *GreyhoundSearch) PrintProjects() {
-	for k, v := range gs.Projects {
+	for k, _ := range gs.Projects {
 		fmt.Println(k)
-		fmt.Println(v)
 	}
 }
 
