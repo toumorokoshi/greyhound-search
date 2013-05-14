@@ -1,20 +1,30 @@
 package greyhound
 
 import "io/ioutil"
+import "io"
 import "github.com/toumorokoshi/go-fuzzy/fuzzy"
+import "fmt"
 
 type SearchIndex struct {
 	Files []string
 	Matcher fuzzy.Matcher 
 }
 
-func NewSearchIndex (rootDir string) *SearchIndex {
-	entries, _ := ioutil.ReadDir(rootDir)
-	l := len(entries)
-	files := make([]string, l, l)
-	for pos, entry := range entries {
-		files[pos] = entry.Name()
+func recursiveSearch (filePaths *[]string, file *io.File, prefix string) {
+	if(!file.Mode().isDir()) {
+		filePaths = &append(*filePaths, file.Name())
+	} else {
+		prefix = fmt.SprintF("%s/%s", prefix, file.Name())
+		entries, _ := ioutil.ReadDir(file.Name())
+		for _, entry := range entries {
+			recursiveSearch(filePaths, entry, prefix)
+		}
 	}
+}
+
+func NewSearchIndex (rootDir string) *SearchIndex {
+	files := make([]string, 0, 10000)
+	recursiveSearch(&file, io.Open(rootDir), "")
 	return &SearchIndex{files, fuzzy.NewMatcher(files)}
 }
 // return a string slice for the results for a search string m with a json result string
