@@ -14,12 +14,12 @@ type SearchIndex struct {
 }
 
 func recursiveSearch(filePaths []string, file os.FileInfo, prefix, root string) []string {
+	path := strings.Join([]string{root, prefix, file.Name()}, "/")
 	if !file.Mode().IsDir() {
-		filePaths = append(filePaths, file.Name())
+		filePaths = append(filePaths, path)
 	} else {
-		dirPath := strings.Join([]string{root, prefix, file.Name()}, "/")
 		prefix = strings.Join([]string{prefix, file.Name()}, "/")
-		entries, err := ioutil.ReadDir(dirPath)
+		entries, err := ioutil.ReadDir(path)
 		if err != nil {
 			log.Print("Error: unable to directory: ", err.Error())
 		}

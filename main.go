@@ -45,7 +45,7 @@ func handleIndexPage(w http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	gs.AddProject("/home/tsutsumi/Workspace/")
+	gs.AddProject("/home/tsutsumi/Dropbox/")
 	gs.PrintProjects()
 	http.Handle("/socket", websocket.Handler(handlerSocket))
 	http.HandleFunc("/query", handler)

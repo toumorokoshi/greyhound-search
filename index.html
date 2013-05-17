@@ -50,7 +50,7 @@ function sendForm() {
 function send(message) {
    console.log("send");
    m = JSON.stringify({action: "query", 
-       queryData: { project : "/home/tsutsumi/Workspace/", query: message}})
+       queryData: { project : "/home/tsutsumi/Dropbox/", query: message}})
    console.log("send:" + m);
    ws.send(m);
    return false;
