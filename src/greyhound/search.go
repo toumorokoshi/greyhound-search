@@ -1,6 +1,8 @@
 package greyhound
 
 import "fmt"
+import "log"
+import "regexp"
 import "encoding/json"
 
 func NewGreyhoundSearch() *GreyhoundSearch {
@@ -11,8 +13,16 @@ type GreyhoundSearch struct {
 	Projects map[string]*SearchIndex
 }
 
-func (gs *GreyhoundSearch) AddProject(path string) {
-	gs.Projects[path] = NewSearchIndex(path)
+func (gs *GreyhoundSearch) AddProject(name, path string, exclusions []string) {
+	regexExclusions := make([]*regexp.Regexp, len(exclusions), len(exclusions))
+	for p, v := range exclusions {
+		var err error
+		regexExclusions[p], err = regexp.Compile(v)
+		if err != nil {
+			log.Print(err)
+		}
+	}
+	gs.Projects[name] = NewSearchIndex(path, regexExclusions)
 }
 
 func (gs *GreyhoundSearch) PrintProjects() {

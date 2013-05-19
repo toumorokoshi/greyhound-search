@@ -11,8 +11,6 @@ function init() {
      ws.close();
      ws = null;
    }
-   path = document.msgform.path.value;
-   console.log("path:" + path);
    var div = document.getElementById("msg");
    var log = document.getElementById("log");
    log.innerText = "path:" + path + "\n" + div.innerText;
@@ -47,10 +45,11 @@ function sendForm() {
    send(m);
 };
 
-function send(message) {
+function send(message, project) {
    console.log("send");
    m = JSON.stringify({action: "query", 
-       queryData: { project : "/home/tsutsumi/Dropbox/", query: message}})
+       queryData: { project : project, 
+                    query: message}})
    console.log("send:" + m);
    ws.send(m);
    return false;
@@ -70,26 +69,28 @@ function completion(list) {
 $(function () {
     $('#file').on('keypress', function () {
         setTimeout(function() { 
-                            send($('#file').val());
-                            //$('#completion').text($('#file').val()) 
+                            send($('#file').val(), "statics");
+                    });
+    });
+    $('#stash-file').on('keypress', function () {
+        setTimeout(function() { 
+                            send($('#stash-file').val(), "code" );
                     });
     });
 });
 </script>
-<body onLoad="init();">
-<form name="msgform" action="#" onsubmit="return sendForm();">
-<select onchange="init()" name="path">
-<option value="/socket" selected="selected">/socket</option>
-</select>
-<input type="text" name="message" size="80" value="">
-<input type="file" name="file" >
-<input type="submit" value="send">
-</form>
+<body onLoad="init()">
 <div class="search-test">
   <label for="file">File: </label>
   <input id="file" />
 </div>
 <p id="completion">
+</p>
+<div class="search-test">
+  <label for="file">File: </label>
+  <input id="stash-file" />
+</div>
+<p id="stash-completion">
 </p>
 <div id="msg"></div>
 <h2>Log</h2>

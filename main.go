@@ -10,6 +10,14 @@ import "code.google.com/p/go.net/websocket"
 import "greyhound"
 
 var gs = greyhound.NewGreyhoundSearch()
+// a list of regex exclusions from the workspace
+var baseExclusions = []string{
+	".*\\.class",
+	".*\\.pyc",
+	"\\.keep",
+	".*\\.key",
+	"\\.rspec",
+}
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	greyhound.HandleGreyhoundSearch(w, r, gs)
@@ -45,7 +53,8 @@ func handleIndexPage(w http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	gs.AddProject("/home/tsutsumi/Dropbox/")
+	log.Print("Loading config...")
+	gs.LoadFromConfig("config.json")
 	gs.PrintProjects()
 	http.Handle("/socket", websocket.Handler(handlerSocket))
 	http.HandleFunc("/query", handler)
