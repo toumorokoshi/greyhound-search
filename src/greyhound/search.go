@@ -1,6 +1,5 @@
 package greyhound
 
-import "fmt"
 import "log"
 import "regexp"
 import "encoding/json"
@@ -25,12 +24,17 @@ func (gs *GreyhoundSearch) AddProject(name, path string, exclusions []string) {
 	gs.Projects[name] = NewSearchIndex(path, regexExclusions)
 }
 
-func (gs *GreyhoundSearch) PrintProjects() {
+// lists projects
+func (gs *GreyhoundSearch) ListProjects() string {
+	project_names := make([]string, len(gs.Projects), len(gs.Projects))
+	i := 0
 	for k, _ := range gs.Projects {
-		fmt.Println(k)
+		project_names[i] = k
+		i++
 	}
+	out_json, _ := json.Marshal(project_names)
+	return string(out_json)
 }
-
 
 // return a search result for a projectName query
 func (gs *GreyhoundSearch) Search(projectName, query string) string {

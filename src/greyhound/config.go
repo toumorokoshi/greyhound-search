@@ -25,6 +25,6 @@ func (gs *GreyhoundSearch) LoadFromConfig(path string) {
 
 func (gs *GreyhoundSearch) LoadFromConfigStruct(gc *GreyhoundConfig) {
 	for name, project := range gc.Projects {
-		gs.AddProject(name, project.Root, project.Exclusions)
+		go gs.AddProject(name, project.Root, project.Exclusions)
 	}
 }

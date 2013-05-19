@@ -7,18 +7,21 @@ package greyhound
 
 import "fmt"
 import "log"
-import "strings"
 import "net/http"
 import "code.google.com/p/go.net/websocket"
 
 func (gs *GreyhoundSearch) HandleGreyhoundSearch(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	project, hasProject := r.Form["project"]
-  query, hasQuery := r.Form["query"]
-	if hasProject && hasQuery {
-		fmt.Fprintf(w, gs.Search(project[0], query[0]))
+	action, hasAction := r.Form["action"]
+	if !hasAction {
+		fmt.Fprintf(w, "no action argument passed!")
 	} else {
-		fmt.Fprintf(w, "no query found!")
+		var queryData map[string]string
+		for k, v := range r.Form {
+			queryData[k] = v[0]
+		}
+		msg := &Message{action[0], queryData}
+		gs.PerformAction(msg)
 	}
 }
 
@@ -32,32 +35,31 @@ each action has a struct to unmarshal json, and returns a series of values
  */
 func (gs *GreyhoundSearch) HandleGreyhoundSearchSocket(ws *websocket.Conn) {
 	for {
-		var msg socketMessage
+		var msg Message
 		err := websocket.JSON.Receive(ws, &msg)
 		log.Println("raw message: ",  msg)
 		if err != nil { 
 			fmt.Println(err)
 			break
 		}
-		if strings.EqualFold(msg.Action, "query") {
-			gs.socketQuery(ws, msg.QueryData)
-		}
+		_ = websocket.Message.Send(ws, gs.PerformAction(&msg))
 	}
 }
 
-func (gs *GreyhoundSearch) socketQuery(ws *websocket.Conn, qd queryData) {
-	log.Println(qd)
-	_ = websocket.Message.Send(ws, gs.Search(qd.Project, qd.Query))
+func (gs *GreyhoundSearch) PerformAction (m *Message) string {
+	switch m.Action {
+	case "query": 
+		return gs.Search(m.QueryData["project"], m.QueryData["query"])
+  case "list_projects":
+		return gs.ListProjects()
+	default:
+		return fmt.Sprintf("%s is not a valid action", m.Action)
+	}
+	// this code path is never hit
+	return ""
 }
 
-type socketMessage struct {
+type Message struct {
 	Action string
-	QueryData queryData
+	QueryData map[string]string
 }
-
-type queryData struct {
-	Project string
-	Query string
-}
-
-
