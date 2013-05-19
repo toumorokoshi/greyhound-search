@@ -5,6 +5,7 @@ TBD
 */
 package greyhound
 
+import "encoding/json"
 import "fmt"
 import "log"
 import "net/http"
@@ -16,12 +17,12 @@ func (gs *GreyhoundSearch) HandleGreyhoundSearch(w http.ResponseWriter, r *http.
 	if !hasAction {
 		fmt.Fprintf(w, "no action argument passed!")
 	} else {
-		var queryData map[string]string
+		queryData := make(map[string]string)
 		for k, v := range r.Form {
 			queryData[k] = v[0]
 		}
 		msg := &Message{action[0], queryData}
-		gs.PerformAction(msg)
+		fmt.Fprintf(w, gs.PerformAction(msg))
 	}
 }
 
@@ -47,16 +48,16 @@ func (gs *GreyhoundSearch) HandleGreyhoundSearchSocket(ws *websocket.Conn) {
 }
 
 func (gs *GreyhoundSearch) PerformAction (m *Message) string {
+	var out_json []byte
 	switch m.Action {
 	case "query": 
-		return gs.Search(m.QueryData["project"], m.QueryData["query"])
+		out_json, _ = json.Marshal(gs.Search(m.QueryData["project"], m.QueryData["query"]))
   case "list_projects":
-		return gs.ListProjects()
+		out_json, _ = json.Marshal(gs.ListProjects())
 	default:
-		return fmt.Sprintf("%s is not a valid action", m.Action)
+		out_json, _ = json.Marshal([]string{fmt.Sprintf("%s is not a valid action", m.Action)})
 	}
-	// this code path is never hit
-	return ""
+	return string(out_json)
 }
 
 type Message struct {
