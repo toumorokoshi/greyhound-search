@@ -15,6 +15,8 @@ func HandleGreyhoundSearch(w http.ResponseWriter, r *http.Request, gs *Greyhound
 	r.ParseForm()
 	project, hasProject := r.Form["project"]
   query, hasQuery := r.Form["query"]
+	log.Print(project)
+	log.Print(query)
 	if hasProject && hasQuery {
 		fmt.Fprintf(w, gs.Search(project[0], query[0]))
 	} else {
