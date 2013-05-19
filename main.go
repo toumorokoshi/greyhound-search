@@ -19,12 +19,12 @@ var baseExclusions = []string{
 	"\\.rspec",
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	greyhound.HandleGreyhoundSearch(w, r, gs)
+func handleQuery(w http.ResponseWriter, r *http.Request) {
+	gs.HandleGreyhoundSearch(w, r)
 }
 
 func handlerSocket(ws *websocket.Conn) {
-	greyhound.HandleGreyhoundSearchSocket(ws, gs)
+	gs.HandleGreyhoundSearchSocket(ws)
 }
 
 func handleIndexPage(w http.ResponseWriter, req *http.Request) {
@@ -57,7 +57,7 @@ func main() {
 	gs.LoadFromConfig("config.json")
 	gs.PrintProjects()
 	http.Handle("/socket", websocket.Handler(handlerSocket))
-	http.HandleFunc("/query", handler)
+	http.HandleFunc("/query", handleQuery)
 	http.HandleFunc("/", handleIndexPage)
 	log.Print("Listening on port 8081...")
 	http.ListenAndServe(":8081", nil)
