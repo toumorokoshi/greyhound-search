@@ -57,6 +57,7 @@ func main() {
 	gs.LoadFromConfig("config.json")
 	log.Print(gs.ListProjects())
 	http.Handle("/socket", websocket.Handler(handlerSocket))
+	http.Handle("/statics/", http.FileServer(http.Dir("./")))
 	http.HandleFunc("/query", handleQuery)
 	http.HandleFunc("/", handleIndexPage)
 	log.Print("Listening on port 8081...")
