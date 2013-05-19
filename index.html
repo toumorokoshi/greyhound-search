@@ -11,8 +11,6 @@ function init() {
      ws.close();
      ws = null;
    }
-   path = document.msgform.path.value;
-   console.log("path:" + path);
    var div = document.getElementById("msg");
    var log = document.getElementById("log");
    log.innerText = "path:" + path + "\n" + div.innerText;
@@ -83,14 +81,6 @@ $(function () {
 });
 </script>
 <body onLoad="init()">
-<form name="msgform" action="#" onsubmit="return sendForm();">
-<select onchange="init()" name="path">
-<option value="/socket" selected="selected">/socket</option>
-</select>
-<input type="text" name="message" size="80" value="">
-<input type="file" name="file" >
-<input type="submit" value="send">
-</form>
 <div class="search-test">
   <label for="file">File: </label>
   <input id="file" />
