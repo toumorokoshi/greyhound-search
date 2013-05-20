@@ -56,7 +56,10 @@
         <label>File Search: </label>
         <input id="file-search" type="text" data-provide="typeahead" autocomplete="off"/>
       </div>
-      <div id="preview">
+      <div id="preview-container">
+        <h3 id="preview-title"></h3>
+        <pre id="preview">
+        </pre>
       </div>
 
       <!--<h1>Greyhound code search</h1>
@@ -71,16 +74,35 @@
     <script src="/statics/main.js"></script>
     <script>
       ghs = null;
+      previewTitle = $('#preview-title');
+      preview = $('#preview');
       $(document).ready(function () {
         ghs = startGHWebSocket(function (m) { console.log(m); });
       });
+
+      // autocomplete process
       function complete(query, process) {
         ghs.query("query", { project: "statics", query: query }, process);
+      }
+
+      // load file
+      function view_file(file_path, element) {
+        previewTitle.html(file_path);
+        ghs.query("view_file", { file: file_path }, function (content) {
+          element.html(content);
+        });
+      }
+
+      // update method. Loads file
+      function update(item) {
+          view_file(item, preview);
+          return item;
       }
       $('#file-search').typeahead({
           source: complete,
           matcher: function (i) { return true; },
           sorter: function (items) { return items; },
+          updater: update,
           items: 10
       })
     </script>

@@ -29,10 +29,6 @@ func handleIndexPage(w http.ResponseWriter, req *http.Request) {
 	greyhound.HandleFile(w, "./index.html")
 }
 
-func handleNewIndexPage(w http.ResponseWriter, req *http.Request) {
-	greyhound.HandleFile(w, "./newindex.html")
-}
-
 func main() {
 	log.Print("Loading config...")
 	gs.LoadFromConfig("config.json")
@@ -40,7 +36,6 @@ func main() {
 	http.Handle("/socket", websocket.Handler(handlerSocket))
 	http.Handle("/statics/", http.FileServer(http.Dir("./")))
 	http.HandleFunc("/query", handleQuery)
-	http.HandleFunc("/new", handleNewIndexPage)
 	http.HandleFunc("/", handleIndexPage)
 	log.Print("Listening on port 8081...")
 	http.ListenAndServe(":8081", nil)

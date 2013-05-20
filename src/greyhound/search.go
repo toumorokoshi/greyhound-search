@@ -39,7 +39,7 @@ func (gs *GreyhoundSearch) ListProjects() []string {
 func (gs *GreyhoundSearch) ViewFile(path string) string {
 	content, err := ioutil.ReadFile(path)
 	if err != nil {
-		log.Printf("Unable te read file! ", err)
+		log.Printf("Unable to read file! ", err)
 	}
 	return string(content)
 }
