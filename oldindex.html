@@ -1,0 +1,98 @@
+<html>
+<head>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
+<script type="text/javascript">
+var path;
+var ws;
+function init() {
+   console.log("init");
+   if (ws != null) {
+     ws.close();
+     ws = null;
+   }
+   var div = document.getElementById("msg");
+   var log = document.getElementById("log");
+   log.innerText = "path:" + path + "\n" + div.innerText;
+   ws = new WebSocket("ws://localhost:8081/socket");
+   ws.binaryType = "blob"
+   ws.onopen = function () {
+      log.innerText = "opened\n" + log.innerText;
+   };
+   ws.onmessage = function (e) {
+      //div.innerText = "msg:" + e.data + "\n"
+      completion($.parseJSON(e.data));
+      /*if (e.data instanceof ArrayBuffer) {
+        s = "ArrayBuffer: " + e.data.byteLength + "[";
+        var view = new Uint8Array(e.data);
+        for (var i = 0; i < view.length; ++i) {
+          s += " " + view[i];
+        }
+        s += "]";
+        div.innerText = s + "\n";
+        completion(e.data);
+      } */
+   };
+   ws.onclose = function (e) {
+      log.innerText = "closed\n" + log.innerText;
+   };
+   console.log("init");
+   log.innerText = "init\n" + log.innerText;
+};
+
+function sendForm() {
+   var m = document.msgform.message.value;
+   send(m);
+};
+
+function send(message, project) {
+   console.log("send");
+   m = JSON.stringify({action: "query", 
+       queryData: { project : project, 
+                    query: message}})
+   console.log("send:" + m);
+   ws.send(m);
+   return false;
+}
+
+// receive an array and create a list
+function completion(list) {
+  var completion_block = $('#completion');
+  completion_block.html("<ul></ul>");
+  $.each(list, function (index, value) {
+    var element = $("<li></li>");
+    element.html(value);
+    completion_block.append(element);
+  });
+}
+
+$(function () {
+    $('#file').on('keypress', function () {
+        setTimeout(function() { 
+                            send($('#file').val(), "statics");
+                    });
+    });
+    $('#stash-file').on('keypress', function () {
+        setTimeout(function() { 
+                            send($('#stash-file').val(), "code" );
+                    });
+    });
+});
+</script>
+<body onLoad="init()">
+<div class="search-test">
+  <label for="file">File: </label>
+  <input id="file" />
+</div>
+<p id="completion">
+</p>
+<div class="search-test">
+  <label for="file">File: </label>
+  <input id="stash-file" />
+</div>
+<p id="stash-completion">
+</p>
+<div id="msg"></div>
+<h2>Log</h2>
+<div id="log"></div>
+</html>

@@ -1,6 +1,7 @@
 package greyhound
 
 import "log"
+import "io/ioutil"
 import "regexp"
 
 func NewGreyhoundSearch() *GreyhoundSearch {
@@ -32,6 +33,15 @@ func (gs *GreyhoundSearch) ListProjects() []string {
 		i++
 	}
 	return project_names
+}
+
+// get file contents
+func (gs *GreyhoundSearch) ViewFile(path string) string {
+	content, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Printf("Unable te read file! ", err)
+	}
+	return string(content)
 }
 
 // return a search result for a projectName query

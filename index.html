@@ -1,98 +1,88 @@
-<html>
-<head>
-<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-<script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
-<script type="text/javascript">
-var path;
-var ws;
-function init() {
-   console.log("init");
-   if (ws != null) {
-     ws.close();
-     ws = null;
-   }
-   var div = document.getElementById("msg");
-   var log = document.getElementById("log");
-   log.innerText = "path:" + path + "\n" + div.innerText;
-   ws = new WebSocket("ws://localhost:8081/socket");
-   ws.binaryType = "blob"
-   ws.onopen = function () {
-      log.innerText = "opened\n" + log.innerText;
-   };
-   ws.onmessage = function (e) {
-      //div.innerText = "msg:" + e.data + "\n"
-      completion($.parseJSON(e.data));
-      /*if (e.data instanceof ArrayBuffer) {
-        s = "ArrayBuffer: " + e.data.byteLength + "[";
-        var view = new Uint8Array(e.data);
-        for (var i = 0; i < view.length; ++i) {
-          s += " " + view[i];
-        }
-        s += "]";
-        div.innerText = s + "\n";
-        completion(e.data);
-      } */
-   };
-   ws.onclose = function (e) {
-      log.innerText = "closed\n" + log.innerText;
-   };
-   console.log("init");
-   log.innerText = "init\n" + log.innerText;
-};
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Bootstrap, from Twitter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-function sendForm() {
-   var m = document.msgform.message.value;
-   send(m);
-};
+    <!-- Le styles -->
+    <link href="/statics/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+    </style>
+    <link href="/statics/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
 
-function send(message, project) {
-   console.log("send");
-   m = JSON.stringify({action: "query", 
-       queryData: { project : project, 
-                    query: message}})
-   console.log("send:" + m);
-   ws.send(m);
-   return false;
-}
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="/statics/bootstrap/js/html5shiv.js"></script>
+    <![endif]-->
 
-// receive an array and create a list
-function completion(list) {
-  var completion_block = $('#completion');
-  completion_block.html("<ul></ul>");
-  $.each(list, function (index, value) {
-    var element = $("<li></li>");
-    element.html(value);
-    completion_block.append(element);
-  });
-}
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/statics/bootstrap/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/statics/bootstrap/ico/apple-touch-icon-114-precomposed.png">
+      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/statics/bootstrap/ico/apple-touch-icon-72-precomposed.png">
+                    <link rel="apple-touch-icon-precomposed" href="/statics/bootstrap/ico/apple-touch-icon-57-precomposed.png">
+                                   <link rel="shortcut icon" href="/statics/bootstrap/ico/favicon.png">
+  </head>
 
-$(function () {
-    $('#file').on('keypress', function () {
-        setTimeout(function() { 
-                            send($('#file').val(), "statics");
-                    });
-    });
-    $('#stash-file').on('keypress', function () {
-        setTimeout(function() { 
-                            send($('#stash-file').val(), "code" );
-                    });
-    });
-});
-</script>
-<body onLoad="init()">
-<div class="search-test">
-  <label for="file">File: </label>
-  <input id="file" />
-</div>
-<p id="completion">
-</p>
-<div class="search-test">
-  <label for="file">File: </label>
-  <input id="stash-file" />
-</div>
-<p id="stash-completion">
-</p>
-<div id="msg"></div>
-<h2>Log</h2>
-<div id="log"></div>
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="#">Greyhound</a>
+          <!--<div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="active"><a href="#">Home</a></li>
+              <li><a href="#about">About</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ul>
+          </div>--><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="search-test">
+        <label>File Search: </label>
+        <input id="file-search" type="text" data-provide="typeahead" autocomplete="off"/>
+      </div>
+      <div id="preview">
+      </div>
+
+      <!--<h1>Greyhound code search</h1>
+      <p>Use this document as a way to quick start any new project.<br> All you get is this message and a barebones HTML document.</p>-->
+
+    </div> <!-- /container -->
+
+    <!-- JS -->
+    <!-- ================================================== -->
+    <script src="/statics/jquery.js"></script>
+    <script src="/statics/bootstrap/js/bootstrap.js"></script>
+    <script src="/statics/main.js"></script>
+    <script>
+      ghs = null;
+      $(document).ready(function () {
+        ghs = startGHWebSocket(function (m) { console.log(m); });
+      });
+      function complete(query, process) {
+        ghs.query("query", { project: "statics", query: query }, process);
+      }
+      $('#file-search').typeahead({
+          source: complete,
+          matcher: function (i) { return true; },
+          sorter: function (items) { return items; },
+          items: 10
+      })
+    </script>
+  </body>
 </html>

@@ -9,8 +9,11 @@ import (
 	"strings"
 )
 
+type IndexedFile struct {
+	FullPath, FileName string
+}
+
 type SearchIndex struct {
-	Files   []string
 	Matcher fuzzy.Matcher
 	Exclusions []*regexp.Regexp
 }
@@ -24,11 +27,11 @@ func exclude(exclusions []*regexp.Regexp, target string) bool {
 	return false
 }
 
-func recursiveSearch(filePaths []string, file os.FileInfo, prefix, root string, exclusions []*regexp.Regexp) []string {
+func recursiveSearch(filePaths []fuzzy.MatchStruct, file os.FileInfo, prefix, root string, exclusions []*regexp.Regexp) []fuzzy.MatchStruct {
 	path := strings.Join([]string{root, prefix, file.Name()}, "/")
 	if !file.Mode().IsDir() {
 		if !exclude(exclusions, file.Name()) {
-			filePaths = append(filePaths, file.Name())
+			filePaths = append(filePaths, fuzzy.MatchStruct{file.Name(), map[string]string{"fullPath": path}})
 		}
 	} else {
 		prefix = strings.Join([]string{prefix, file.Name()}, "/")
@@ -44,7 +47,7 @@ func recursiveSearch(filePaths []string, file os.FileInfo, prefix, root string, 
 }
 
 func NewSearchIndex(rootDir string, exclusions []*regexp.Regexp) *SearchIndex {
-	files := make([]string, 0, 1000000)
+	files := make([]fuzzy.MatchStruct, 0, 1000000)
 	dir, err := os.Lstat(rootDir)
 	if err != nil {
 		log.Print("Error: unable to open root path: ", err.Error())
@@ -53,7 +56,7 @@ func NewSearchIndex(rootDir string, exclusions []*regexp.Regexp) *SearchIndex {
 	rootDir = strings.Join(paths[0:len(paths) - 2], "/")
 	files = recursiveSearch(files, dir, "", rootDir, exclusions)
 	log.Print("Total Filecount: ", len(files))
-	return &SearchIndex{files, fuzzy.NewMatcher(files), exclusions}
+	return &SearchIndex{fuzzy.NewMatcher(files), exclusions}
 }
 
 // return a string slice for the results for a search string m with a json result string
