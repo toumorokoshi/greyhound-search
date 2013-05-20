@@ -64,7 +64,7 @@ func (si *SearchIndex) Results(query string) []string {
 	matches := si.Matcher.ClosestList(query, 20)
 	matchStrings := make([]string, len(matches))
 	for pos, value := range matches {
-		matchStrings[pos] = value.Value
+		matchStrings[pos] = value.Data["fullPath"]
 	}
 	return matchStrings
 }
