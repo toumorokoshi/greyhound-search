@@ -22,10 +22,12 @@ func handleQuery(w http.ResponseWriter, r *http.Request) {
 }
 
 func handlerSocket(ws *websocket.Conn) {
+	log.Print("handling socket...")
 	gs.HandleGreyhoundSearchSocket(ws)
 }
 
 func handleIndexPage(w http.ResponseWriter, req *http.Request) {
+	log.Print("handling index...")
 	greyhound.HandleFile(w, "./index.html")
 }
 
