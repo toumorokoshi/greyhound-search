@@ -52,8 +52,9 @@ func NewSearchIndex(rootDir string, exclusions []*regexp.Regexp) *SearchIndex {
 	if err != nil {
 		log.Print("Error: unable to open root path: ", err.Error())
 	}
+	rootDir = strings.TrimSuffix(rootDir, "/")
 	paths := strings.Split(rootDir, "/")
-	rootDir = strings.Join(paths[0:len(paths) - 2], "/")
+	rootDir = strings.Join(paths[0:len(paths) - 1], "/")
 	files = recursiveSearch(files, dir, "", rootDir, exclusions)
 	log.Print("Total Filecount: ", len(files))
 	return &SearchIndex{fuzzy.NewMatcher(files), exclusions}

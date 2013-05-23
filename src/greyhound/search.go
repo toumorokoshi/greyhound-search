@@ -13,6 +13,7 @@ type GreyhoundSearch struct {
 }
 
 func (gs *GreyhoundSearch) AddProject(name, path string, exclusions []string) {
+	log.Printf("Searching in path %s...", path)
 	regexExclusions := make([]*regexp.Regexp, len(exclusions), len(exclusions))
 	for p, v := range exclusions {
 		var err error
@@ -22,6 +23,7 @@ func (gs *GreyhoundSearch) AddProject(name, path string, exclusions []string) {
 		}
 	}
 	gs.Projects[name] = NewSearchIndex(path, regexExclusions)
+	log.Print(gs.ListProjects())
 }
 
 // lists projects

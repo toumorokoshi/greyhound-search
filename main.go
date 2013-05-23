@@ -34,7 +34,6 @@ func handleIndexPage(w http.ResponseWriter, req *http.Request) {
 func main() {
 	log.Print("Loading config...")
 	gs.LoadFromConfig("config.json")
-	log.Print(gs.ListProjects())
 	http.Handle("/socket", websocket.Handler(handlerSocket))
 	http.Handle("/statics/", http.FileServer(http.Dir("./")))
 	http.HandleFunc("/query", handleQuery)

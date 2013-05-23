@@ -19,7 +19,10 @@ func (gs *GreyhoundSearch) LoadFromConfig(path string) {
 	if err != nil {
 		log.Print("Could not read file! ", err)
 	}
-	json.Unmarshal(contents, &gc)
+	err = json.Unmarshal(contents, &gc)
+	if err != nil {
+		log.Print("Could not unmarshal file! ", err)
+	}
 	gs.LoadFromConfigStruct(&gc)
 }
 
