@@ -114,6 +114,11 @@
         });
       }
 
+      // a more detailed highlight description
+      function detailedHighlight(item) {
+        return "<div>" + item + "</div>";
+      }
+
       // update method. Loads file
       function update(item) {
           view_file(item, preview);
@@ -131,6 +136,7 @@
           matcher: function (i) { return true; },
           sorter: function (items) { return items; },
           updater: update,
+          highlighter: detailedHighlight,
           items: 10
       })
     </script>
