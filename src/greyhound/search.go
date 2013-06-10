@@ -22,7 +22,7 @@ func (gs *GreyhoundSearch) AddProject(name, path string, exclusions []string) {
 			log.Print(err)
 		}
 	}
-	gs.Projects[name] = NewSearchIndex(path, regexExclusions)
+	gs.Projects[name] = NewSearchIndex(name, path, regexExclusions)
 	log.Print(gs.ListProjects())
 }
 
@@ -47,10 +47,19 @@ func (gs *GreyhoundSearch) ViewFile(path string) string {
 }
 
 // return a search result for a projectName query
-func (gs *GreyhoundSearch) Search(projectName, query string) []string {
+func (gs *GreyhoundSearch) SearchFile(projectName, query string) []string {
 	_, hasKey := gs.Projects[projectName]
 	if hasKey {
-		return gs.Projects[projectName].Results(query)
+		return gs.Projects[projectName].FileResults(query)
+	}
+	return []string{"no results found"}
+}
+
+// return a search result for a projectName query
+func (gs *GreyhoundSearch) SearchCode(projectName, query string) []string {
+	_, hasKey := gs.Projects[projectName]
+	if hasKey {
+		return gs.Projects[projectName].CodeResults(query)
 	}
 	return []string{"no results found"}
 }

@@ -51,7 +51,9 @@ func (gs *GreyhoundSearch) PerformAction (m *Message) string {
 	var out_json []byte
 	switch m.Action {
 	case "query": 
-		out_json, _ = json.Marshal(gs.Search(m.QueryData["project"], m.QueryData["query"]))
+		out_json, _ = json.Marshal(gs.SearchFile(m.QueryData["project"], m.QueryData["query"]))
+  case "query_code":
+		out_json, _ = json.Marshal(gs.SearchCode(m.QueryData["project"], m.QueryData["query"]))
   case "list_projects":
 		out_json, _ = json.Marshal(gs.ListProjects())
 	case "view_file":

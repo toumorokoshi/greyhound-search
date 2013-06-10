@@ -56,6 +56,10 @@
         <label>File Search: </label>
         <input id="file-search" type="text" data-provide="typeahead" autocomplete="off"/>
       </div>
+      <div class="code-search">
+        <label>Code Search: </label>
+        <input id="code-search" type="text" data-provide="typeahead" autocomplete="off"/>
+      </div>
       <div id="preview-container">
         <h3 id="preview-title"></h3>
         <pre id="preview">
@@ -81,8 +85,13 @@
       });
 
       // autocomplete process
-      function complete(query, process) {
+      function fileComplete(query, process) {
         ghs.query("query", { project: "statics", query: query }, process);
+      }
+
+      // autocomplete process
+      function codeComplete(query, process) {
+        ghs.query("query_code", { project: "statics", query: query }, process);
       }
 
       // load file
@@ -99,7 +108,14 @@
           return item;
       }
       $('#file-search').typeahead({
-          source: complete,
+          source: fileComplete,
+          matcher: function (i) { return true; },
+          sorter: function (items) { return items; },
+          updater: update,
+          items: 10
+      })
+      $('#code-search').typeahead({
+          source: codeComplete,
           matcher: function (i) { return true; },
           sorter: function (items) { return items; },
           updater: update,

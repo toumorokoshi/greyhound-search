@@ -1,0 +1,9 @@
+{"Projects": {
+    "code": {
+        "Root": "/home/tsutsumi/Workspace/",
+        "Exclusions": [".*\\.class", ".*\\.pyc"]
+    },
+    "statics": {
+        "Root": "/home/tsutsumi/Opensource/"}
+    }
+}
