@@ -21,3 +21,6 @@ _testmain.go
 
 *.exe
 src/code.google.com
+src/github.com
+config.json
+greyhound-search
