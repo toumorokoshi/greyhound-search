@@ -47,3 +47,4 @@ TODO:
 -----
 
 * Image Preview / load
+* Watch for changes and re-index automatically

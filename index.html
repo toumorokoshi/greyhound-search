@@ -50,8 +50,10 @@
         </div>
       </div>
     </div>
-
     <div class="container">
+      <label>Project: </label>
+      <select id="projects">
+      </select>
       <div class="search-test">
         <label>File Search: </label>
         <input id="file-search" type="text" data-provide="typeahead" autocomplete="off"/>
@@ -82,7 +84,17 @@
       preview = $('#preview');
       $(document).ready(function () {
         ghs = startGHWebSocket(function (m) { console.log(m); });
+        setTimeout(function() {
+          ghs.query("list_projects", {}, populateProjects);
+        }, 500);
       });
+
+      // populate projects
+      function populateProjects(projects) {
+        $.each(projects, function(key, value) {
+          $('#projects').append($('<option>', { value: value }).text(value));
+        });
+      }
 
       // autocomplete process
       function fileComplete(query, process) {
@@ -91,7 +103,7 @@
 
       // autocomplete process
       function codeComplete(query, process) {
-        ghs.query("query_code", { project: "statics", query: query }, process);
+        ghs.query("query_code", { project: $('#projects').val(), query: query }, process);
       }
 
       // load file
