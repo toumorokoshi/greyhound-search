@@ -3,6 +3,15 @@ greyhound-search
 
 A web application for searching for files and finding text within them.
 
+Features
+--------
+
+* File search (with autocomplete)
+* Text search in files (thanks to [codesearch](https://code.google.com/p/codesearch/), this is insanely fast)
+* Search multiple directories
+* built-in api 
+* websockets
+
 Requirements
 ------------
 
@@ -48,3 +57,4 @@ TODO:
 
 * Image Preview / load
 * Watch for changes and re-index automatically
+* Docs
