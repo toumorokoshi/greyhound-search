@@ -58,6 +58,10 @@ func (gs *GreyhoundSearch) PerformAction (m *Message) string {
 		out_json, _ = json.Marshal(gs.ListProjects())
 	case "view_file":
 		out_json, _ = json.Marshal(gs.ViewFile(m.QueryData["file"]))
+	case "add_project":
+		// todo: actually add some real error handling here
+		gs.AddProject(m.QueryData["name"], m.QueryData["path"], []string{})
+		out_json, _ = json.Marshal("Success!")
 	default:
 		out_json, _ = json.Marshal([]string{fmt.Sprintf("%s is not a valid action", m.Action)})
 	}
