@@ -8,6 +8,7 @@ import (
 	csregexp "code.google.com/p/codesearch/regexp"
 	"io/ioutil"
 	"log"
+	"path"
 	"os"
 	"regexp"
 	"strings"
@@ -65,11 +66,23 @@ func NewSearchIndex(name, rootDir string, exclusions []*regexp.Regexp) *SearchIn
 	rootDir = strings.TrimSuffix(rootDir, "/")
 	paths := strings.Split(rootDir, "/")
 	rootDir = strings.Join(paths[0:len(paths) - 1], "/")
-	codeindexPath, err := filepath.Abs(fmt.Sprintf("./indices/%s.ix", name))
-	if err != nil {
-		log.Fatal(err)
+	indexDir, err := filepath.Abs("./.indices/")
+	codeindexPath := path.Join(indexDir, fmt.Sprintf("%s.ix", name))
+	if _, err := os.Stat(indexDir); err != nil {
+			if os.IsNotExist(err) {
+				log.Println("Index directory doesn't exist! Creating...")
+				if err := os.MkdirAll(indexDir, 0777); err != nil {
+					log.Println("Error encountered creating ", indexDir)
+					log.Fatal(err)
+				}
+			} else {
+				log.Println("Error checking if index directory exists!")
+				log.Fatal(err)
+			}
 	}
+	log.Println("Creating index file: ", codeindexPath)
 	if _, err := os.Create(codeindexPath); err != nil {
+		log.Println("Error creating index file!")
 		log.Fatal(err)
 	}
 	codeindex := index.Create(codeindexPath)

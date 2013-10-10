@@ -23,7 +23,9 @@ func (gs *GreyhoundSearch) LoadFromConfig(path string) {
 	if err != nil {
 		log.Print("Could not unmarshal file! ", err)
 	}
-	gs.LoadFromConfigStruct(&gc)
+	if err == nil {
+			gs.LoadFromConfigStruct(&gc)
+	}
 }
 
 func (gs *GreyhoundSearch) LoadFromConfigStruct(gc *GreyhoundConfig) {

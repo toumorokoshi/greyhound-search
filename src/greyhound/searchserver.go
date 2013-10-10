@@ -29,7 +29,7 @@ func (gs *GreyhoundSearch) HandleGreyhoundSearch(w http.ResponseWriter, r *http.
 /* handles greyhound-search's websocket actions.
 effectively, greyhound messages are always sent as json. Specifically:
 { action: 'ACTION',
-  data: { JSON_OBJECT }
+  queryData: { JSON_OBJECT }
 }
 
 each action has a struct to unmarshal json, and returns a series of values
